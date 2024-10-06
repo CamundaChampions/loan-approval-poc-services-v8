@@ -50,21 +50,21 @@
       <bpmn:incoming>Flow_07ra654</bpmn:incoming>
       <bpmn:outgoing>Flow_0433cu7</bpmn:outgoing>
       <bpmn:timerEventDefinition id="TimerEventDefinition_0b5ru05">
-        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">=10</bpmn:timeDuration>
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">=P10D</bpmn:timeDuration>
       </bpmn:timerEventDefinition>
     </bpmn:intermediateCatchEvent>
     <bpmn:intermediateCatchEvent id="Event_0j7ajip" name="2 Days expiring">
       <bpmn:incoming>Flow_1hokvc4</bpmn:incoming>
       <bpmn:outgoing>Flow_0hh4tpg</bpmn:outgoing>
       <bpmn:timerEventDefinition id="TimerEventDefinition_0flhidf">
-        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">=5</bpmn:timeDuration>
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">=P2D</bpmn:timeDuration>
       </bpmn:timerEventDefinition>
     </bpmn:intermediateCatchEvent>
     <bpmn:intermediateCatchEvent id="Event_1glqrtj" name="30 Days SLA">
       <bpmn:incoming>Flow_1wfzgt5</bpmn:incoming>
       <bpmn:outgoing>Flow_1qn2oc6</bpmn:outgoing>
       <bpmn:timerEventDefinition id="TimerEventDefinition_0xnubtc">
-        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">=30</bpmn:timeDuration>
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">=P30D</bpmn:timeDuration>
       </bpmn:timerEventDefinition>
     </bpmn:intermediateCatchEvent>
     <bpmn:endEvent id="Event_0xbpp5h" name="Application Auto-Closed">
@@ -190,7 +190,7 @@
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=isApplicationComplete = false</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_1tdztvm" name="No" sourceRef="Gateway_1213rk1" targetRef="Activity_09addmn">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=hasMissingData</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=hasMissingData = false</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sendTask id="Activity_requestForMissingApplicationData" name="Notify Applicant to provide missing data">
       <bpmn:extensionElements>
@@ -251,7 +251,7 @@
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=isApplicationComplete</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_0a9f9es" name="Yes" sourceRef="Gateway_1213rk1" targetRef="Activity_1dunbtg">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=hasMissingData = false</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=hasMissingData = true</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:serviceTask id="Activity_creditCheck" name="Credit Check">
       <bpmn:extensionElements>
