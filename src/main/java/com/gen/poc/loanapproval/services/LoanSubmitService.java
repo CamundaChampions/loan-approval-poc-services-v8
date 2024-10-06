@@ -9,6 +9,9 @@ import io.camunda.tasklist.dto.TaskState;
 import io.camunda.tasklist.exception.TaskListException;
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
+import io.camunda.zeebe.client.api.search.filter.ProcessInstanceFilter;
+import io.camunda.zeebe.client.api.search.response.ProcessInstance;
+import io.camunda.zeebe.client.protocol.rest.SearchQueryResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -35,25 +38,13 @@ public class LoanSubmitService {
     }
 
     public void completeUserTask(String processInstanceKey, String taskName, Map<String, Object> additionalParam){
-        TaskSearch taskSearch = new TaskSearch()
-                .setProcessInstanceKey(processInstanceKey)
-                .setTaskDefinitionId(taskName)
-                .setState(TaskState.CREATED);
-        try {
-            Optional<Task> awaitingUserTask = searchTask(taskSearch);
-            awaitingUserTask.ifPresent(task -> {
-                try {
-                    taskListClient.completeTask(task.getId(), additionalParam);
-                } catch (TaskListException e) {
-                    throw new RuntimeException(e);
-                }
-//                zeebeClient.newCompleteCommand(Long.parseLong(task.getId()))
-//                        .variables(additionalParam)
-//                        .send().join();
-            });
-        } catch (TaskListException e) {
-            throw new RuntimeException(e);
-        }
+
+
+        Long taskId = (Long) additionalParam.get("taskId");
+        zeebeClient.newCompleteCommand(taskId)
+                    .variables(additionalParam)
+                    .send().join();
+
     }
 
     private Optional<Task> searchTask(TaskSearch taskSearch) throws TaskListException {
@@ -63,9 +54,10 @@ public class LoanSubmitService {
     }
 
     public void acknowledgeDocumentSigning(String loanId, Map<String, Object> additionalParam){
+
         zeebeClient.newCorrelateMessageCommand()
                 .messageName("MSGEVNT_SIGNED_DOC_RECIEVED")
-                .correlationKey("MSGEVNT_SIGNED_DOC_RECIEVED-"+loanId)
+                .correlationKey("MSGEVNT_SIGNED_DOC_RECIEVED")
                 .variables(additionalParam).send().join();
     }
 

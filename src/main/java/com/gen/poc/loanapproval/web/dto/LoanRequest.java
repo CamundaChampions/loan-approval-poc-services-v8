@@ -7,8 +7,10 @@ import java.math.BigDecimal;
 @Data
 public class LoanRequest {
 
-    private String loanType;
+    private String loanCategory;
 
     private BigDecimal loanAmount;
+
+    private String reason;
 
 }
