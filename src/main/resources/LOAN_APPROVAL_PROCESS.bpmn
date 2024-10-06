@@ -136,7 +136,7 @@
       <bpmn:incoming>Flow_14o1vde</bpmn:incoming>
       <bpmn:outgoing>Flow_0khv2g5</bpmn:outgoing>
     </bpmn:userTask>
-    <bpmn:sequenceFlow id="Flow_00xb9cs" sourceRef="Gateway_1u8e1dx" targetRef="Event_0fsfors">
+    <bpmn:sequenceFlow id="Flow_00xb9cs" name="Rejected" sourceRef="Gateway_1u8e1dx" targetRef="Event_0fsfors">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=decision = "REJECTED"</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_02v8mio" sourceRef="Gateway_12i57tf" targetRef="Event_0hcm4nh" />
@@ -170,6 +170,11 @@
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=highRisk = false</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:userTask id="Activity_0ym4juq" name="Manager Approval">
+      <bpmn:extensionElements>
+        <zeebe:ioMapping>
+          <zeebe:input source="=&#34;managerApproval&#34;" target="taskType" />
+        </zeebe:ioMapping>
+      </bpmn:extensionElements>
       <bpmn:incoming>Flow_05bt797</bpmn:incoming>
       <bpmn:outgoing>Flow_163p03s</bpmn:outgoing>
     </bpmn:userTask>
@@ -486,6 +491,9 @@
       <bpmndi:BPMNEdge id="Flow_00xb9cs_di" bpmnElement="Flow_00xb9cs" bioc:stroke="#831311" color:border-color="#831311">
         <di:waypoint x="1609" y="390" />
         <di:waypoint x="1706" y="390" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1636" y="372" width="44" height="14" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_02v8mio_di" bpmnElement="Flow_02v8mio">
         <di:waypoint x="539" y="790" />
