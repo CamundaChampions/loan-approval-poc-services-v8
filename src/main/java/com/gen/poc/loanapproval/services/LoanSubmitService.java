@@ -1,17 +1,8 @@
 package com.gen.poc.loanapproval.services;
 
 import com.gen.poc.loanapproval.web.dto.LoanRequest;
-import io.camunda.tasklist.CamundaTaskListClient;
-import io.camunda.tasklist.dto.Task;
-import io.camunda.tasklist.dto.TaskList;
-import io.camunda.tasklist.dto.TaskSearch;
-import io.camunda.tasklist.dto.TaskState;
-import io.camunda.tasklist.exception.TaskListException;
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
-import io.camunda.zeebe.client.api.search.filter.ProcessInstanceFilter;
-import io.camunda.zeebe.client.api.search.response.ProcessInstance;
-import io.camunda.zeebe.client.protocol.rest.SearchQueryResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -25,8 +16,6 @@ import java.util.Optional;
 public class LoanSubmitService {
 
     private final ZeebeClient zeebeClient;
-
-    private final CamundaTaskListClient taskListClient;
 
     public String processLoanRequest(LoanRequest request){
 
@@ -44,12 +33,6 @@ public class LoanSubmitService {
         zeebeClient.newCompleteCommand(taskId)
                     .variables(additionalParam)
                     .send().join();
-
-    }
-
-    private Optional<Task> searchTask(TaskSearch taskSearch) throws TaskListException {
-        TaskList taskList = taskListClient.getTasks(taskSearch);
-        return taskList.size() > 0 ? Optional.empty() : Optional.of(taskList.first());
 
     }
 

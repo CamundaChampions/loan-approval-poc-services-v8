@@ -25,33 +25,16 @@ repositories {
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-//    implementation 'org.springframework.boot:spring-boot-starter-security'
-//    implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'com.h2database:h2:2.2.220'
-//	implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-hateoas'
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    // https://mvnrepository.com/artifact/io.camunda/camunda-tasklist-client-java
-    implementation 'io.camunda:camunda-tasklist-client-java:8.5.3.6'
-    // https://mvnrepository.com/artifact/io.camunda/spring-zeebe-starter
-//    implementation 'io.camunda:zeebe-client-java:8.5.7'
-//    implementation 'io.camunda.spring:spring-boot-starter-camunda:8.5.7'
-    implementation ('io.camunda:spring-boot-starter-camunda-sdk:8.6.0')
-//			{
-//		exclude group: 'io.camunda', module:'common'
-//	}
-    // https://mvnrepository.com/artifact/io.camunda/spring-zeebe-starter
-//	implementation 'io.camunda:spring-zeebe-starter:8.5.7'
 
-    // https://mvnrepository.com/artifact/io.camunda.spring/java-common
-//	implementation 'io.camunda.spring:java-common:8.5.7'
+    implementation ('io.camunda:spring-boot-starter-camunda-sdk:8.5.7')
 
-
-//    implementation 'io.camunda:zeebe-bom:8.5.7'
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0'
-//	implementation(platform("io.grpc:grpc-bom:1.68.0"))
+	implementation(platform("io.grpc:grpc-bom:1.68.0"))
 
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
