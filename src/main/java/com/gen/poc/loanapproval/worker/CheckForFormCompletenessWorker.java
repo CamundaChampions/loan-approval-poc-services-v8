@@ -6,13 +6,16 @@ import io.camunda.zeebe.spring.client.annotation.JobWorker;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.util.Map;
+
 @Component
 @Slf4j
 public class CheckForFormCompletenessWorker {
 
     @JobWorker(type = "checkForFormCompletenessServiceTask", autoComplete = true)
-    public void checkForFormCompletenessServiceTask(final JobClient client, final ActivatedJob job){
+    public Map<String, Object> checkForFormCompletenessServiceTask(final JobClient client, final ActivatedJob job){
 
         log.info("test checkForFormCompletenessServiceTask worker");
+        return Map.of("isApplicationComplete", true);
     }
 }
