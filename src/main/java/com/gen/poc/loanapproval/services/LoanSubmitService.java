@@ -55,7 +55,7 @@ public class LoanSubmitService {
 
     public void acknowledgeDocumentSigning(String loanId, Map<String, Object> additionalParam){
 
-        zeebeClient.newCorrelateMessageCommand()
+        zeebeClient.newPublishMessageCommand()
                 .messageName("MSGEVNT_SIGNED_DOC_RECIEVED")
                 .correlationKey("MSGEVNT_SIGNED_DOC_RECIEVED")
                 .variables(additionalParam).send().join();

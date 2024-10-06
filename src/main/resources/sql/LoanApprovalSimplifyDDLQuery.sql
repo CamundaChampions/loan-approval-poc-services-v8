@@ -24,6 +24,6 @@ CREATE TABLE IF NOT EXISTS LOAN_APPROVAL_TASK
     COMMENTS    VARCHAR(256),
     workflow_id INTEGER NOT NULL,
     customer_id INTEGER NOT NULL,
-    PRIMARY KEY (task_id)
+    PRIMARY KEY (task_id),
     FOREIGN KEY (Loan_application_Id) REFERENCES LOAN_APPLICATION (Loan_application_Id)
 );

@@ -39,8 +39,8 @@
         <bpmn:flowNodeRef>Event_0hcm4nh</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Activity_1i8mani</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>START_EVENT_LOAN_REQUEST_RECEIVED</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>Event_1glqrtj</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Activity_creditCheck</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Event_1glqrtj</bpmn:flowNodeRef>
       </bpmn:lane>
       <bpmn:lane id="Lane_0w5idb3" name="Loan Cancellation task">
         <bpmn:flowNodeRef>Activity_18tnpxp</bpmn:flowNodeRef>
@@ -58,13 +58,6 @@
       <bpmn:outgoing>Flow_0hh4tpg</bpmn:outgoing>
       <bpmn:timerEventDefinition id="TimerEventDefinition_0flhidf">
         <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">="P2D"</bpmn:timeDuration>
-      </bpmn:timerEventDefinition>
-    </bpmn:intermediateCatchEvent>
-    <bpmn:intermediateCatchEvent id="Event_1glqrtj" name="30 Days SLA">
-      <bpmn:incoming>Flow_1wfzgt5</bpmn:incoming>
-      <bpmn:outgoing>Flow_1qn2oc6</bpmn:outgoing>
-      <bpmn:timerEventDefinition id="TimerEventDefinition_0xnubtc">
-        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">="P30D"</bpmn:timeDuration>
       </bpmn:timerEventDefinition>
     </bpmn:intermediateCatchEvent>
     <bpmn:endEvent id="Event_0xbpp5h" name="Application Auto-Closed">
@@ -263,6 +256,13 @@
       <bpmn:incoming>Flow_1xyi20u</bpmn:incoming>
       <bpmn:outgoing>Flow_1saa5ze</bpmn:outgoing>
     </bpmn:serviceTask>
+    <bpmn:intermediateCatchEvent id="Event_1glqrtj" name="30 Days SLA">
+      <bpmn:incoming>Flow_1wfzgt5</bpmn:incoming>
+      <bpmn:outgoing>Flow_1qn2oc6</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerEventDefinition_0xnubtc">
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">="P30D"</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:intermediateCatchEvent>
   </bpmn:process>
   <bpmn:message id="Message_2l417h0" name="MSGEVNT_MISSING_APP_DATA_RECIEVED_AKNWLG">
     <bpmn:extensionElements>
@@ -276,7 +276,7 @@
   </bpmn:message>
   <bpmn:message id="Message_1m1gqhi" name="MSGEVNT_SIGNED_DOC_RECIEVED">
     <bpmn:extensionElements>
-      <zeebe:subscription correlationKey="=MSGEVNT_SIGNED_DOC_RECIEVED" />
+      <zeebe:subscription correlationKey="=&#34;MSGEVNT_SIGNED_DOC_RECIEVED&#34;" />
     </bpmn:extensionElements>
   </bpmn:message>
   <bpmn:message id="Message_06aga38" name="EVNTSTARTMSGEVENT_CANCELLATION">
@@ -308,12 +308,6 @@
         <dc:Bounds x="546" y="862" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="526" y="905" width="76" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_1glqrtj_di" bpmnElement="Event_1glqrtj">
-        <dc:Bounds x="1027" y="862" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1013" y="905" width="65" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_0xbpp5h_di" bpmnElement="Event_0xbpp5h">
@@ -356,6 +350,12 @@
         <dc:Bounds x="1559" y="365" width="50" height="50" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="1558" y="328" width="51" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1glqrtj_di" bpmnElement="Event_1glqrtj">
+        <dc:Bounds x="1026" y="862" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1012" y="905" width="65" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_12pkyh1_di" bpmnElement="Activity_18tnpxp" isExpanded="true">
@@ -557,7 +557,7 @@
         <di:waypoint x="1044" y="765" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1qn2oc6_di" bpmnElement="Flow_1qn2oc6">
-        <di:waypoint x="1063" y="880" />
+        <di:waypoint x="1062" y="880" />
         <di:waypoint x="1126" y="880" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1r6cn4k_di" bpmnElement="Flow_1r6cn4k">
@@ -570,9 +570,7 @@
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1wfzgt5_di" bpmnElement="Flow_1wfzgt5">
         <di:waypoint x="1044" y="815" />
-        <di:waypoint x="1044" y="839" />
-        <di:waypoint x="1045" y="839" />
-        <di:waypoint x="1045" y="862" />
+        <di:waypoint x="1044" y="862" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_05bt797_di" bpmnElement="Flow_05bt797" bioc:stroke="#6b3c00" color:border-color="#6b3c00">
         <di:waypoint x="1344" y="522" />
