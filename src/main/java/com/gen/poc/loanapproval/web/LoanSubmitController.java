@@ -35,4 +35,14 @@ public class LoanSubmitController {
         return ResponseEntity.ok("Success!!");
 
     }
+
+    @PostMapping(path = "/{loan-id}/doc-signing/acknowledge", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> acknowledgeDocumentSigning(@PathVariable(name = "loan-id") String loanId,
+                                                             @RequestBody Map<String, Object> additionalParam) {
+
+        loanSubmitService.acknowledgeDocumentSigning(loanId, additionalParam);
+
+        return ResponseEntity.ok("Success!!");
+
+    }
 }

@@ -61,4 +61,12 @@ public class LoanSubmitService {
         return taskList.size() > 0 ? Optional.empty() : Optional.of(taskList.first());
 
     }
+
+    public void acknowledgeDocumentSigning(String loanId, Map<String, Object> additionalParam){
+        zeebeClient.newCorrelateMessageCommand()
+                .messageName("MSGEVNT_SIGNED_DOC_RECIEVED")
+                .correlationKey("MSGEVNT_SIGNED_DOC_RECIEVED-"+loanId)
+                .variables(additionalParam).send().join();
+    }
+
 }

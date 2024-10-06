@@ -50,21 +50,21 @@
       <bpmn:incoming>Flow_07ra654</bpmn:incoming>
       <bpmn:outgoing>Flow_0433cu7</bpmn:outgoing>
       <bpmn:timerEventDefinition id="TimerEventDefinition_0b5ru05">
-        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">=P10D</bpmn:timeDuration>
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">="P10D"</bpmn:timeDuration>
       </bpmn:timerEventDefinition>
     </bpmn:intermediateCatchEvent>
     <bpmn:intermediateCatchEvent id="Event_0j7ajip" name="2 Days expiring">
       <bpmn:incoming>Flow_1hokvc4</bpmn:incoming>
       <bpmn:outgoing>Flow_0hh4tpg</bpmn:outgoing>
       <bpmn:timerEventDefinition id="TimerEventDefinition_0flhidf">
-        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">=P2D</bpmn:timeDuration>
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">="P2D"</bpmn:timeDuration>
       </bpmn:timerEventDefinition>
     </bpmn:intermediateCatchEvent>
     <bpmn:intermediateCatchEvent id="Event_1glqrtj" name="30 Days SLA">
       <bpmn:incoming>Flow_1wfzgt5</bpmn:incoming>
       <bpmn:outgoing>Flow_1qn2oc6</bpmn:outgoing>
       <bpmn:timerEventDefinition id="TimerEventDefinition_0xnubtc">
-        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">=P30D</bpmn:timeDuration>
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">="P30D"</bpmn:timeDuration>
       </bpmn:timerEventDefinition>
     </bpmn:intermediateCatchEvent>
     <bpmn:endEvent id="Event_0xbpp5h" name="Application Auto-Closed">
@@ -221,6 +221,9 @@
     <bpmn:sendTask id="Activity_1bj9jpi" name="Trigger Document Signing">
       <bpmn:extensionElements>
         <zeebe:taskDefinition type="notifyToApplicantServiceTask" />
+        <zeebe:ioMapping>
+          <zeebe:input source="=&#34;docSigning&#34;" target="taskType" />
+        </zeebe:ioMapping>
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_07yc8ef</bpmn:incoming>
       <bpmn:incoming>Flow_1ba2kzx</bpmn:incoming>
@@ -255,7 +258,7 @@
     </bpmn:sequenceFlow>
     <bpmn:serviceTask id="Activity_creditCheck" name="Credit Check">
       <bpmn:extensionElements>
-        <zeebe:taskDefinition type="checkForFormCompletenessServiceTask" />
+        <zeebe:taskDefinition type="creditCheckServiceTask" />
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_1xyi20u</bpmn:incoming>
       <bpmn:outgoing>Flow_1saa5ze</bpmn:outgoing>
