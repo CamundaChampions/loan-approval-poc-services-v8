@@ -11,18 +11,20 @@ import lombok.Data;
 public class LoanApprovalTask {
 
     @Id
-    @Column(name = "task_id", nullable = false, length = 25)
+    @Column(name = "task_id")
     private String taskId;
 
-    @Column(name = "task_instance_id", nullable = false, length = 50)
+    @Column(name = "task_category")
+    private String taskCategory;
+
+    @Column(name = "loan_application_id")
+    private String loanApplicationId;
+
+    @Column(name = "task_instance_id")
     private String taskInstanceId;
 
-    @Column(name = "role", nullable = false, length = 10)
-    private Role role;
-
-    @Column(name = "status", nullable = false, length = 10)
+    @Column(name = "status")
+    @Enumerated(value = EnumType.STRING)
     private TaskStatus status;
 
-    @Column(name = "loan_request_id", nullable = false)
-    private Integer loanRequestId;
 }

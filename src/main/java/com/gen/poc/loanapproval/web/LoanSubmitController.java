@@ -1,7 +1,8 @@
 package com.gen.poc.loanapproval.web;
 
-import com.gen.poc.loanapproval.repository.entity.LoanRequest;
+import com.gen.poc.loanapproval.repository.entity.LoanApplication;
 import com.gen.poc.loanapproval.services.LoanSubmitService;
+import com.gen.poc.loanapproval.web.dto.LoanRequestDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -17,9 +18,10 @@ public class LoanSubmitController {
     private final LoanSubmitService loanSubmitService;
 
     @PostMapping(path = "", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> createLoanRequestAndReturnRequestId(@RequestBody LoanRequest loanRequest) {
+    public ResponseEntity<String> createLoanRequestAndReturnRequestId(@RequestHeader(name = "user-id") String userId,
+                                                                      @RequestBody LoanRequestDTO requestDTO) {
 
-        String response = loanSubmitService.processLoanRequest(loanRequest);
+        String response = loanSubmitService.processLoanRequest(userId, requestDTO);
 
         return ResponseEntity.ok(response);
 
