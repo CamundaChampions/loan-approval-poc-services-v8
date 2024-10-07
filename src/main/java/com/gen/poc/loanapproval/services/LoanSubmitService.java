@@ -1,6 +1,6 @@
 package com.gen.poc.loanapproval.services;
 
-import com.gen.poc.loanapproval.web.dto.LoanRequest;
+import com.gen.poc.loanapproval.entity.LoanRequest;
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
 import lombok.RequiredArgsConstructor;
@@ -8,7 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
-import java.util.Optional;
 
 @Service
 @Slf4j

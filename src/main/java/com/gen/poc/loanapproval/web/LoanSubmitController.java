@@ -1,7 +1,7 @@
 package com.gen.poc.loanapproval.web;
 
+import com.gen.poc.loanapproval.entity.LoanRequest;
 import com.gen.poc.loanapproval.services.LoanSubmitService;
-import com.gen.poc.loanapproval.web.dto.LoanRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
