@@ -1,8 +1,11 @@
 package com.gen.poc.loanapproval.services;
 
+import com.gen.poc.loanapproval.constant.enums.TaskStatus;
 import com.gen.poc.loanapproval.enums.LoanApplicationStatus;
 import com.gen.poc.loanapproval.repository.LoanApplicationRepository;
+import com.gen.poc.loanapproval.repository.LoanApprovalTaskRepository;
 import com.gen.poc.loanapproval.repository.entity.LoanApplication;
+import com.gen.poc.loanapproval.repository.entity.LoanApprovalTask;
 import com.gen.poc.loanapproval.services.mapper.LoanRequestMapper;
 import com.gen.poc.loanapproval.web.dto.LoanRequestDTO;
 import io.camunda.zeebe.client.ZeebeClient;
@@ -11,9 +14,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -25,6 +31,8 @@ public class LoanSubmitService {
     private final LoanRequestMapper loanRequestMapper;
 
     private final LoanApplicationRepository loanApplicationRepository;
+
+    private final LoanApprovalTaskRepository loanApprovalTaskRepository;
 
 
     public String processLoanRequest(String userId, LoanRequestDTO request){
@@ -49,10 +57,20 @@ public class LoanSubmitService {
 
     public void completeUserTask(String loanApplicationId, String taskName, Map<String, Object> additionalParam){
 
-        Long taskId = (Long) additionalParam.get("taskId");
-        zeebeClient.newCompleteCommand(taskId)
+        List<LoanApprovalTask> loanApprovalTask = loanApprovalTaskRepository.findByLoanApplicationIdAndTaskCategory(Long.valueOf(loanApplicationId), taskName);
+
+        TaskStatus status = TaskStatus.COMPLETED;
+        if(!CollectionUtils.isEmpty(loanApprovalTask) && loanApprovalTask.get(0).getStatus() == TaskStatus.IN_PROGRESS) {
+            if((boolean)additionalParam.get("hasMissingData"))
+                status = TaskStatus.REJECTED;
+
+            loanApprovalTask.get(0).setStatus(status);
+            loanApprovalTaskRepository.save(loanApprovalTask.get(0));
+
+            zeebeClient.newCompleteCommand(Long.parseLong(loanApprovalTask.get(0).getTaskInstanceId()))
                     .variables(additionalParam)
                     .send().join();
+        }
 
     }
 

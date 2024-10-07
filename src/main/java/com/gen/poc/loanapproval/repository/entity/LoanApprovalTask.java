@@ -18,7 +18,7 @@ public class LoanApprovalTask {
     private String taskCategory;
 
     @Column(name = "loan_application_id")
-    private String loanApplicationId;
+    private Long loanApplicationId;
 
     @Column(name = "task_instance_id")
     private String taskInstanceId;

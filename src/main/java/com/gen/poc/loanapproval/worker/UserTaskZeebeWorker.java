@@ -43,7 +43,7 @@ public class UserTaskZeebeWorker {
         task.setTaskCategory(taskType);
         task.setTaskInstanceId(String.valueOf(job.getKey()));
         task.setStatus(TaskStatus.IN_PROGRESS);
-        task.setLoanApplicationId(String.valueOf(loanApplicationId));
+        task.setLoanApplicationId(loanApplicationId);
         loanApprovalTaskRepository.save(task);
         Optional<LoanApplication> loanApplication = loanApplicationRepository.findById(loanApplicationId);
         loanApplication.get().setStatus(status);
