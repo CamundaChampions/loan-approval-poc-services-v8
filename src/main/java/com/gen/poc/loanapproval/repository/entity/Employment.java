@@ -1,4 +1,4 @@
-package com.gen.poc.loanapproval.entity;
+package com.gen.poc.loanapproval.repository.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -11,27 +11,31 @@ import java.math.BigDecimal;
 
 @Data
 @Entity
-@Table(name = "Cash_Deposit_Collateral")
-public class CashDepositCollateral {
+@Table(name = "Employment")
+public class Employment {
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(name = "Bank_Name")
-	private String bankName;
+	@Column(name = "Employer_Name")
+	private String employerName;
 
-	@Column(name = "Account_Number")
-	private String accountNumber;
+	@Column(name = "Job_Title")
+	private String jobTitle;
 
-	@Column(name = "Amount_Balance")
-	private BigDecimal amountBalance;
+	@Column(name = "Annual_Income")
+	private BigDecimal annualIncome;
+
+	@Column(name = "Experience")
+	private Integer experience;
 
 	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "LOAN_REQUEST_ID")
+	@JoinColumn(name = "CUSTOMER_ID")
 	@JsonIgnore
 	@NotNull
 	@ToString.Exclude
 	@EqualsAndHashCode.Exclude
-	private LoanRequest loanRequest;
+	private Customer customer;
 
 }

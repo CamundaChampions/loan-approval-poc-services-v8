@@ -1,6 +1,6 @@
 package com.gen.poc.loanapproval.services;
 
-import com.gen.poc.loanapproval.entity.LoanRequest;
+import com.gen.poc.loanapproval.repository.entity.LoanRequest;
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
 import lombok.RequiredArgsConstructor;

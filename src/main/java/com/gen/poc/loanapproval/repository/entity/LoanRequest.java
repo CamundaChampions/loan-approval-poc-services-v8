@@ -1,4 +1,4 @@
-package com.gen.poc.loanapproval.entity;
+package com.gen.poc.loanapproval.repository.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;

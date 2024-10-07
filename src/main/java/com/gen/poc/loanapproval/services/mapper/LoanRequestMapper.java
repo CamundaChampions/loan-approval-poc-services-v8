@@ -1,6 +1,6 @@
-package com.gen.poc.loanapproval.web.mapper;
+package com.gen.poc.loanapproval.services.mapper;
 
-import com.gen.poc.loanapproval.entity.*;
+import com.gen.poc.loanapproval.repository.entity.*;
 import com.gen.poc.loanapproval.web.dto.*;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -16,7 +16,7 @@ public interface LoanRequestMapper {
 
 	@Mapping(target = "id", ignore = true)
 	@Mapping(target = "loanRequest", ignore = true)
-	Customer toCustomerEntity(CustomerDTO dto);
+    Customer toCustomerEntity(CustomerDTO dto);
 
 	@Mapping(target = "id", ignore = true)
 	@Mapping(target = "loanRequest", ignore = true)
@@ -24,21 +24,21 @@ public interface LoanRequestMapper {
 
 	@Mapping(target = "id", ignore = true)
 	@Mapping(target = "loanRequest", ignore = true)
-	CashDepositCollateral toCashDepositCollateralEntity(CashDepositCollateralDTO cashDepositCollateralDTO);
+    CashDepositCollateral toCashDepositCollateralEntity(CashDepositCollateralDTO cashDepositCollateralDTO);
 
 	LoanRequestDTO toDto(LoanRequest model);
 
 	@Mapping(target = "id", ignore = true)
 	@Mapping(target = "customer", ignore = true)
-	Address toAddressEntity(AddressDTO addressDTO);
+    Address toAddressEntity(AddressDTO addressDTO);
 
 	@Mapping(target = "id", ignore = true)
 	@Mapping(target = "customer", ignore = true)
-	Employment toEmploymentEntity(EmploymentDTO employmentDTO);
+    Employment toEmploymentEntity(EmploymentDTO employmentDTO);
 
 	@Mapping(target = "id", ignore = true)
 	@Mapping(target = "customer", ignore = true)
-	DepositAccount toDepositAccountEntity(DepositAccountDTO depositAccountDTO);
+    DepositAccount toDepositAccountEntity(DepositAccountDTO depositAccountDTO);
 
 	DepositAccountDTO toDepositAccountDto(DepositAccount depositAccount);
 
