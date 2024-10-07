@@ -8,7 +8,7 @@ import lombok.Data;
 @Entity
 @Table(name = "Loan_Approval_task")
 @Data
-public class LoaApprovalTask {
+public class LoanApprovalTask {
 
     @Id
     @Column(name = "task_id", nullable = false, length = 25)
