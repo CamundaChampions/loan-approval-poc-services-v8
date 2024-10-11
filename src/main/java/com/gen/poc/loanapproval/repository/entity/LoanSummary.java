@@ -1,9 +1,9 @@
 package com.gen.poc.loanapproval.repository.entity;
 
+import com.gen.poc.loanapproval.enums.ApprovalCategory;
 import com.gen.poc.loanapproval.enums.LoanApplicationStatus;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import com.gen.poc.loanapproval.enums.LoanCategory;
+import jakarta.persistence.*;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -16,9 +16,11 @@ public class LoanSummary {
     @Column(name = "loan_application_Id")
     private BigDecimal loanApplicationId;
 
+    @Enumerated(value = EnumType.STRING)
     @Column(name = "loan_category")
-    private String loanType;
+    private LoanCategory loanType;
 
+    @Enumerated(value = EnumType.STRING)
     @Column(name = "status")
     private LoanApplicationStatus statusCode;
 
@@ -27,4 +29,8 @@ public class LoanSummary {
 
     @Column(name = "task_id")
     private String taskId;
+
+    @Enumerated(value = EnumType.STRING)
+    @Column(name = "task_category")
+    private ApprovalCategory taskCategory;
 }

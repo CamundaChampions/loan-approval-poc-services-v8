@@ -129,12 +129,12 @@
     <bpmn:intermediateCatchEvent id="Event_1hnqcys" name="Document Signing Received">
       <bpmn:incoming>Flow_0o10cr9</bpmn:incoming>
       <bpmn:outgoing>Flow_1r6cn4k</bpmn:outgoing>
-      <bpmn:messageEventDefinition id="MessageEventDefinition_1q9xqq1" messageRef="Message_1m1gqhi" />
+      <bpmn:messageEventDefinition id="MessageEventDefinition_1q9xqq1" messageRef="Message_27i5851" />
     </bpmn:intermediateCatchEvent>
     <bpmn:userTask id="Activity_financialAssessment" name="Financial Assessment">
       <bpmn:extensionElements>
         <zeebe:ioMapping>
-          <zeebe:input source="=&#34;financialAssessment&#34;" target="taskType" />
+          <zeebe:input source="=&#34;FINANCIAL_ASSESSMENT_MANAGER&#34;" target="taskType" />
         </zeebe:ioMapping>
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_1saa5ze</bpmn:incoming>
@@ -177,7 +177,7 @@
     <bpmn:userTask id="Activity_0ym4juq" name="Risk Assesssment Approval">
       <bpmn:extensionElements>
         <zeebe:ioMapping>
-          <zeebe:input source="=&#34;riskAssessment&#34;" target="taskType" />
+          <zeebe:input source="=&#34;RISK_ASSESSMENT_MANAGER&#34;" target="taskType" />
         </zeebe:ioMapping>
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_05bt797</bpmn:incoming>
@@ -223,10 +223,7 @@
     </bpmn:serviceTask>
     <bpmn:sendTask id="Activity_1bj9jpi" name="Trigger Document Signing">
       <bpmn:extensionElements>
-        <zeebe:taskDefinition type="notifyToApplicantServiceTask" />
-        <zeebe:ioMapping>
-          <zeebe:input source="=&#34;docSigning&#34;" target="taskType" />
-        </zeebe:ioMapping>
+        <zeebe:taskDefinition type="notifyForDocumentSigning" />
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_07yc8ef</bpmn:incoming>
       <bpmn:incoming>Flow_1ba2kzx</bpmn:incoming>
@@ -286,12 +283,17 @@
   </bpmn:message>
   <bpmn:message id="Message_1m1gqhi" name="MSGEVNT_SIGNED_DOC_RECIEVED">
     <bpmn:extensionElements>
-      <zeebe:subscription correlationKey="=&#34;MSGEVNT_SIGNED_DOC_RECIEVED&#34;" />
+      <zeebe:subscription correlationKey="=documentSigningAcknowledgement" />
     </bpmn:extensionElements>
   </bpmn:message>
   <bpmn:message id="Message_06aga38" name="EVNTSTARTMSGEVENT_CANCELLATION">
     <bpmn:extensionElements>
       <zeebe:subscription correlationKey="=&#34;EVNTSTARTMSGEVENT_CANCELLATION&#34;" />
+    </bpmn:extensionElements>
+  </bpmn:message>
+  <bpmn:message id="Message_27i5851" name="MSGEVNT_SIGNED_DOC_RECEIVED">
+    <bpmn:extensionElements>
+      <zeebe:subscription correlationKey="=documentSigningAcknowledgement" />
     </bpmn:extensionElements>
   </bpmn:message>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">

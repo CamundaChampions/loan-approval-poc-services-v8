@@ -1,4 +1,4 @@
-package com.gen.poc.loanapproval.constant.enums;
+package com.gen.poc.loanapproval.enums;
 
 import lombok.Getter;
 

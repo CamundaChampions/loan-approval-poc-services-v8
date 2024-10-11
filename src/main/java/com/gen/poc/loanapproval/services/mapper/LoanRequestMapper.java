@@ -5,6 +5,8 @@ import com.gen.poc.loanapproval.web.dto.*;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring")
 public interface LoanRequestMapper {
 	@Mapping(target = "loanApplicationId", ignore = true)
@@ -13,6 +15,8 @@ public interface LoanRequestMapper {
 	@Mapping(target = "status", ignore = true)
 	@Mapping(target = "customerId", ignore = true)
 	LoanApplication toLoanRequestEntityOnCreate(LoanRequestDTO dto);
+
+	List<LoanSummaryDto> mapTo(List<LoanSummary> source);
 //
 //	@Mapping(target = "id", ignore = true)
 //	@Mapping(target = "loanRequest", ignore = true)

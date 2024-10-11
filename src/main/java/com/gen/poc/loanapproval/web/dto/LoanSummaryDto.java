@@ -1,5 +1,6 @@
 package com.gen.poc.loanapproval.web.dto;
 
+import com.gen.poc.loanapproval.enums.ApprovalCategory;
 import com.gen.poc.loanapproval.enums.LoanApplicationStatus;
 import lombok.Data;
 
@@ -25,4 +26,6 @@ public class LoanSummaryDto {
     private boolean approvalRequire;
 
     private String taskId;
+
+    private ApprovalCategory taskCategory;
 }

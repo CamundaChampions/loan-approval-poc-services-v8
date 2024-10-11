@@ -1,13 +1,17 @@
 package com.gen.poc.loanapproval.web;
 
+import com.gen.poc.loanapproval.enums.ApprovalCategory;
 import com.gen.poc.loanapproval.repository.entity.LoanApplication;
 import com.gen.poc.loanapproval.services.LoanSubmitService;
 import com.gen.poc.loanapproval.web.dto.LoanRequestDTO;
+import com.gen.poc.loanapproval.web.dto.LoanSummaryDto;
+import com.gen.poc.loanapproval.web.dto.LoanSummaryResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -29,7 +33,7 @@ public class LoanSubmitController {
 
     @PostMapping(path = "/{loan-id}/approval-type/{approval-type}/approve", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> approve(@PathVariable(name = "loan-id") String loanId,
-                                          @PathVariable(name = "approval-type") String approvalType,
+                                          @PathVariable(name = "approval-type") ApprovalCategory approvalType,
                                           @RequestBody Map<String, Object> additionalParam) {
 
         loanSubmitService.completeUserTask(loanId,approvalType, additionalParam);
@@ -46,5 +50,11 @@ public class LoanSubmitController {
 
         return ResponseEntity.ok("Success!!");
 
+    }
+
+    @GetMapping(path = "", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LoanSummaryResponse> getAllProgressTaskOfUser(@RequestHeader(name = "user-id") String userId){
+
+        return ResponseEntity.ok(loanSubmitService.findAllUserItems(userId));
     }
 }

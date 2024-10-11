@@ -1,6 +1,7 @@
 package com.gen.poc.loanapproval.worker;
 
-import com.gen.poc.loanapproval.constant.enums.TaskStatus;
+import com.gen.poc.loanapproval.enums.TaskStatus;
+import com.gen.poc.loanapproval.enums.ApprovalCategory;
 import com.gen.poc.loanapproval.enums.LoanApplicationStatus;
 import com.gen.poc.loanapproval.repository.LoanApplicationRepository;
 import com.gen.poc.loanapproval.repository.LoanApprovalTaskRepository;
@@ -31,16 +32,19 @@ public class UserTaskZeebeWorker {
         String taskType = job.getVariablesAsMap().get("taskType").toString();
         LoanApplicationStatus status;
         String taskId;
-        if("financialAssessment".equalsIgnoreCase(taskType)){
+        ApprovalCategory approvalCategory;
+        if(ApprovalCategory.FINANCIAL_ASSESSMENT_MANAGER.name().equalsIgnoreCase(taskType)){
+            approvalCategory = ApprovalCategory.FINANCIAL_ASSESSMENT_MANAGER;
             taskId = "FA-".concat(loanApplicationId.toString());
             status = LoanApplicationStatus.PENDING_FINANCIAL_ASSESSMENT_MANAGER_APPROVAL;
         } else {
+            approvalCategory = ApprovalCategory.RISK_ASSESSMENT_MANAGER;
             taskId = "RA-".concat(loanApplicationId.toString());
             status = LoanApplicationStatus.PENDING_RISK_ASSESSMENT_MANAGER_APPROVAL;
         }
         LoanApprovalTask task = new LoanApprovalTask();
         task.setTaskId(taskId);
-        task.setTaskCategory(taskType);
+        task.setTaskCategory(approvalCategory);
         task.setTaskInstanceId(String.valueOf(job.getKey()));
         task.setStatus(TaskStatus.IN_PROGRESS);
         task.setLoanApplicationId(loanApplicationId);

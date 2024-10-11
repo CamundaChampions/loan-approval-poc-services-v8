@@ -1,6 +1,7 @@
 package com.gen.poc.loanapproval.repository.entity;
 
 import com.gen.poc.loanapproval.enums.LoanApplicationStatus;
+import com.gen.poc.loanapproval.enums.LoanCategory;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -17,7 +18,8 @@ public class LoanApplication {
 	private Long loanApplicationId;
 
 	@Column(name = "loan_category")
-	private String loanCategory;
+	@Enumerated(value = EnumType.STRING)
+	private LoanCategory loanCategory;
 
 	@Column(name = "Amount")
 	private BigDecimal amount;
