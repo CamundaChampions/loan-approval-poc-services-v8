@@ -273,12 +273,12 @@
   </bpmn:process>
   <bpmn:message id="Message_2l417h0" name="MSGEVNT_MISSING_APP_DATA_RECIEVED_AKNWLG">
     <bpmn:extensionElements>
-      <zeebe:subscription correlationKey="=MSGEVNT_MISSING_APP_DATA_RECIEVED_AKNWLG" />
+      <zeebe:subscription correlationKey="=missingAppDataReceivedAcknowledgement" />
     </bpmn:extensionElements>
   </bpmn:message>
   <bpmn:message id="Message_0m37m6l" name="MSGEVNT_AKNOWLEDGE_MISSING_DOC_PROVIDED">
     <bpmn:extensionElements>
-      <zeebe:subscription correlationKey="=MSGEVNT_AKNOWLEDGE_MISSING_DOC_PROVIDED" />
+      <zeebe:subscription correlationKey="=missingDocProvidedAcknowledgement" />
     </bpmn:extensionElements>
   </bpmn:message>
   <bpmn:message id="Message_1m1gqhi" name="MSGEVNT_SIGNED_DOC_RECIEVED">

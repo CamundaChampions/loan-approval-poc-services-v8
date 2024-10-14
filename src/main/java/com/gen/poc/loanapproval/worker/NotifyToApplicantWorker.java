@@ -26,16 +26,28 @@ public class NotifyToApplicantWorker {
     @JobWorker(type = "notifyToApplicantServiceTask", autoComplete = true)
     public Map<String, Object> notifyToApplicantServiceTask(final JobClient client, final ActivatedJob job,
                                                             @Variable("taskType") String taskType) {
-        Map<String, Object> returnType = new HashMap<>();
+        Map<String, Object> variables = job.getVariablesAsMap();
         Long loanApplicationId = Long.valueOf((Integer) job.getVariablesAsMap().get("loan-id"));
+        boolean isApplicationComplete = Boolean.parseBoolean(job.getVariablesAsMap().get("isApplicationComplete").toString());
         Optional<LoanApplication> loanApplication = loanApplicationRepository.findById(loanApplicationId);
-        if ("docSigning".equals(taskType)) {
-            loanApplication.get().setStatus(LoanApplicationStatus.PENDING_DOCUMENT_SIGNING);
-            loanApplicationRepository.save(loanApplication.get());
-            returnType.put("documentSigningAcknowledgement", String.format(AppConstants.DOC_SIGN_CORRELATION_KEY, job.getProcessInstanceKey()));
-        }
-        log.info("test notifyToApplicantServiceTask worker");
-        return returnType;
+
+        loanApplication.ifPresent(loadApp -> {
+
+            if (LoanApplicationStatus.CREATED.equals(loadApp.getStatus()) && !isApplicationComplete) {
+                loadApp.setStatus(LoanApplicationStatus.PENDING_DATA_CORRECTION);
+                variables.put("missingAppDataReceivedAcknowledgement", String.format(AppConstants.APP_UPDATED_CORRELATION_KEY, job.getProcessInstanceKey()));
+            } else if ("docSigning".equals(taskType)) {
+                loadApp.setStatus(LoanApplicationStatus.PENDING_DOCUMENT_SIGNING);
+                variables.put("documentSigningAcknowledgement", String.format(AppConstants.DOC_SIGN_CORRELATION_KEY, job.getProcessInstanceKey()));
+            } else if (LoanApplicationStatus.PENDING_FINANCIAL_ASSESSMENT_MANAGER_APPROVAL.equals(loadApp.getStatus())
+                    && Boolean.parseBoolean(job.getVariablesAsMap().get("hasMissingData").toString())) {
+                loadApp.setStatus(LoanApplicationStatus.PENDING_DOCUMENT);
+                variables.put("missingDocProvidedAcknowledgement", String.format(AppConstants.MISSING_DOC_CORRELATION_KEY, job.getProcessInstanceKey()));
+            }
+            loanApplicationRepository.flush();
+            log.info("test notifyToApplicantServiceTask worker");
+        });
+        return variables;
     }
 
     @JobWorker(type = "notifyForDocumentSigning", autoComplete = true)
