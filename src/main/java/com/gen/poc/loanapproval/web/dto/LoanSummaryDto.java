@@ -15,7 +15,7 @@ public class LoanSummaryDto {
 
     private LoanApplicationStatus statusCode;
 
-    public String getLoanStatus(){
+    public String getStatus(){
         if(this.statusCode == null)
             return "";
         return this.statusCode.getDisplayName();
@@ -28,4 +28,6 @@ public class LoanSummaryDto {
     private String taskId;
 
     private ApprovalCategory taskCategory;
+
+    private boolean requireApplicantAcknowledgement;
 }
