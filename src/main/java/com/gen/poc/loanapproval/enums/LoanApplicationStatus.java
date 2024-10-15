@@ -8,7 +8,7 @@ public enum LoanApplicationStatus {
     PENDING_FINANCIAL_ASSESSMENT_MANAGER_APPROVAL("Pending Financial Assessment Approval"),
     PENDING_RISK_ASSESSMENT_MANAGER_APPROVAL("Pending Risk Assessment Approval"),
     PENDING_DATA_CORRECTION("Pending Data Correction"),
-    PENDING_DOCUMENT("Pending Document"),
+    AWAITING_MISSING_DOCUMENT("Awaiting Missing Document"),
     PENDING_DOCUMENT_SIGNING("Pending Document Signing"),
     APPROVE_AND_DISBURSED("Approve and Disbursed"),
     AUTO_CANCELLED("Auto Cancelled"),
