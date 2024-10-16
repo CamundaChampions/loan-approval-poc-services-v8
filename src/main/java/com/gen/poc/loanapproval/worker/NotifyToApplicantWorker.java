@@ -41,7 +41,7 @@ public class NotifyToApplicantWorker {
                 variables.put("documentSigningAcknowledgement", String.format(AppConstants.DOC_SIGN_CORRELATION_KEY, job.getProcessInstanceKey()));
             } else if (LoanApplicationStatus.PENDING_FINANCIAL_ASSESSMENT_MANAGER_APPROVAL.equals(loadApp.getStatus())
                     && Boolean.parseBoolean(job.getVariablesAsMap().get("hasMissingData").toString())) {
-                loadApp.setStatus(LoanApplicationStatus.PENDING_DOCUMENT);
+                loadApp.setStatus(LoanApplicationStatus.AWAITING_MISSING_DOCUMENT);
                 variables.put("missingDocProvidedAcknowledgement", String.format(AppConstants.MISSING_DOC_CORRELATION_KEY, job.getProcessInstanceKey()));
             }
             loanApplicationRepository.flush();
