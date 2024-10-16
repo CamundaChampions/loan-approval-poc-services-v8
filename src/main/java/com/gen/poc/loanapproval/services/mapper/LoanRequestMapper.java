@@ -17,6 +17,8 @@ public interface LoanRequestMapper {
 	LoanApplication toLoanRequestEntityOnCreate(LoanRequestDTO dto);
 
 	List<LoanSummaryDto> mapTo(List<LoanSummary> source);
+
+	LoanSummaryResponse mapToResponse(LoanSummary source);
 //
 //	@Mapping(target = "id", ignore = true)
 //	@Mapping(target = "loanRequest", ignore = true)

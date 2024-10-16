@@ -1,13 +1,17 @@
 package com.gen.poc.loanapproval.web.dto;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 import java.util.List;
 
-@Data
-public class LoanSummaryResponse {
+@Getter
+@Setter
+@ToString(callSuper = true)
+public class LoanSummaryResponse extends LoanSummaryDto {
 
-    private boolean allowToCreateLoan;
+    private List<String> possibleActivity;
 
-    private List<LoanSummaryDto> loanSummaryList;
 }

@@ -3,6 +3,7 @@ package com.gen.poc.loanapproval.web;
 import com.gen.poc.loanapproval.enums.ApprovalCategory;
 import com.gen.poc.loanapproval.services.LoanSubmitService;
 import com.gen.poc.loanapproval.web.dto.LoanRequestDTO;
+import com.gen.poc.loanapproval.web.dto.LoanSummaryListResponse;
 import com.gen.poc.loanapproval.web.dto.LoanSummaryResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -73,8 +74,17 @@ public class LoanSubmitController {
     }
 
     @GetMapping(path = "", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LoanSummaryResponse> getAllProgressTaskOfUser(@RequestHeader(name = "user-id") String userId) {
+    public ResponseEntity<LoanSummaryListResponse> getAllProgressTaskOfUser(@RequestHeader(name = "user-id") String userId) {
 
         return ResponseEntity.ok(loanSubmitService.findAllUserItems(userId));
     }
+
+    @GetMapping(path = "/{loan-id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LoanSummaryResponse> getLoanDetailsById(@RequestHeader(name = "user-id") String userId,
+                                                                  @PathVariable(name = "loan-id") Long loanId) {
+
+        return ResponseEntity.ok(loanSubmitService.findLoanDetailsByIdAndUser(loanId, userId));
+    }
+
+
 }

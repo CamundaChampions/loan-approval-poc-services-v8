@@ -14,6 +14,7 @@ import com.gen.poc.loanapproval.repository.entity.LoanSummary;
 import com.gen.poc.loanapproval.services.mapper.LoanRequestMapper;
 import com.gen.poc.loanapproval.web.dto.LoanRequestDTO;
 import com.gen.poc.loanapproval.web.dto.LoanSummaryDto;
+import com.gen.poc.loanapproval.web.dto.LoanSummaryListResponse;
 import com.gen.poc.loanapproval.web.dto.LoanSummaryResponse;
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
@@ -139,8 +140,8 @@ public class LoanSubmitService {
 
     }
 
-    public LoanSummaryResponse findAllUserItems(String user) {
-        LoanSummaryResponse response = new LoanSummaryResponse();
+    public LoanSummaryListResponse findAllUserItems(String user) {
+        LoanSummaryListResponse response = new LoanSummaryListResponse();
         UserRoleAndUserList userRole = UserRoleAndUserList.getUserRole(user);
         List<LoanSummaryDto> loanSummaries = findAllTaskByUser(user, userRole);
         response.setLoanSummaryList(loanSummaries);
@@ -163,6 +164,23 @@ public class LoanSubmitService {
 
         return loanRequestMapper.mapTo(loanSummaries);
 
+    }
+
+    public LoanSummaryResponse findLoanDetailsByIdAndUser(Long loanId, String userId){
+        UserRoleAndUserList userRole = UserRoleAndUserList.getUserRole(userId);
+        LoanSummary loanSummary = new LoanSummary();
+        if (userRole == UserRoleAndUserList.FINANCIAL_ASSESSMENT_MANAGER)
+            loanSummary = loanSummaryRepository.getPendingApprovalTaskDetailsByTaskCategoryAndLoanId(ApprovalCategory.FINANCIAL_ASSESSMENT_MANAGER.name(),
+                    LoanApplicationStatus.PENDING_FINANCIAL_ASSESSMENT_MANAGER_APPROVAL.name(), loanId);
+        else if (userRole == UserRoleAndUserList.RISK_ASSESSMENT_MANAGER) {
+            loanSummary = loanSummaryRepository.getPendingApprovalTaskDetailsByTaskCategoryAndLoanId(ApprovalCategory.RISK_ASSESSMENT_MANAGER.name(),
+                    LoanApplicationStatus.PENDING_RISK_ASSESSMENT_MANAGER_APPROVAL.name(), loanId);
+        } else if (userRole == UserRoleAndUserList.APPLICANT) {
+            loanSummary = loanSummaryRepository.getInProcessLoanApplicationItemsOfApplicantAndLoanId(userId, loanId);
+        }
+        LoanSummaryResponse response = loanRequestMapper.mapToResponse(loanSummary);
+
+        return response;
     }
 
 }
