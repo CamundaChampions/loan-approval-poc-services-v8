@@ -24,9 +24,9 @@ public interface LoanSummaryRepository extends JpaRepository<LoanSummary, BigDec
     List<LoanSummary> getPendingApprovalTaskDetailsByTaskCategory(@Param("taskCategory") String taskCategory, @Param("loanStatus") String loanStatus);
 
     @Query(value = """
-            Select LOAN.LOAN_APPLICATION_ID, LOAN_CATEGORY, LOAN.STATUS, AMOUNT, NULL AS TASK_ID, NULL AS TASK_CATEGORY from CAM_POC.Loan_application loan inner join CAM_POC.loan_approval_task task
-                        on loan.loan_application_id = task.loan_application_id
-            where task.status not in  ('APPROVE_AND_DISBURSED','REJECTED','AUTO_CANCELLED')
+            Select LOAN_APPLICATION_ID, LOAN_CATEGORY, STATUS, AMOUNT, NULL AS TASK_ID, NULL AS TASK_CATEGORY 
+            from Loan_application 
+            where status not in  ('APPROVE_AND_DISBURSED','REJECTED','AUTO_CANCELLED')
             AND customer_id = :userId
             """, nativeQuery = true)
     List<LoanSummary> getInProcessLoanApplicationItemsOfApplicant(@Param("userId") String userId);
@@ -42,11 +42,11 @@ public interface LoanSummaryRepository extends JpaRepository<LoanSummary, BigDec
     LoanSummary getPendingApprovalTaskDetailsByTaskCategoryAndLoanId(@Param("taskCategory") String taskCategory, @Param("loanStatus") String loanStatus, @Param("loanId") Long loanId);
 
     @Query(value = """
-            Select LOAN.LOAN_APPLICATION_ID, LOAN_CATEGORY, LOAN.STATUS, AMOUNT, NULL AS TASK_ID, NULL AS TASK_CATEGORY from CAM_POC.Loan_application loan inner join CAM_POC.loan_approval_task task
-                        on loan.loan_application_id = task.loan_application_id
-            where task.status not in  ('APPROVE_AND_DISBURSED','REJECTED','AUTO_CANCELLED')
+            Select LOAN_APPLICATION_ID, LOAN_CATEGORY, STATUS, AMOUNT, NULL AS TASK_ID, NULL AS TASK_CATEGORY 
+            from Loan_application 
+            where status not in  ('APPROVE_AND_DISBURSED','REJECTED','AUTO_CANCELLED')
             AND customer_id = :userId
-            AND LOAN.LOAN_APPLICATION_ID = :loanId
+            AND LOAN_APPLICATION_ID = :loanId
             """, nativeQuery = true)
     LoanSummary getInProcessLoanApplicationItemsOfApplicantAndLoanId(@Param("userId") String userId, @Param("loanId") Long loanId);
 

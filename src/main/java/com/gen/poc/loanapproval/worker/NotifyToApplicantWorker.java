@@ -44,7 +44,7 @@ public class NotifyToApplicantWorker {
                 loadApp.setStatus(LoanApplicationStatus.AWAITING_MISSING_DOCUMENT);
                 variables.put("missingDocProvidedAcknowledgement", String.format(AppConstants.MISSING_DOC_CORRELATION_KEY, job.getProcessInstanceKey()));
             }
-            loanApplicationRepository.flush();
+            loanApplicationRepository.save(loadApp);
             log.info("test notifyToApplicantServiceTask worker");
         });
         return variables;
