@@ -35,11 +35,11 @@ public class UserTaskZeebeWorker {
         ApprovalCategory approvalCategory;
         if(ApprovalCategory.FINANCIAL_ASSESSMENT_MANAGER.name().equalsIgnoreCase(taskType)){
             approvalCategory = ApprovalCategory.FINANCIAL_ASSESSMENT_MANAGER;
-            taskId = "FA-".concat(loanApplicationId.toString());
+            taskId = "FM-".concat(loanApplicationId.toString());
             status = LoanApplicationStatus.PENDING_FINANCIAL_ASSESSMENT_MANAGER_APPROVAL;
         } else {
             approvalCategory = ApprovalCategory.RISK_ASSESSMENT_MANAGER;
-            taskId = "RA-".concat(loanApplicationId.toString());
+            taskId = "RM-".concat(loanApplicationId.toString());
             status = LoanApplicationStatus.PENDING_RISK_ASSESSMENT_MANAGER_APPROVAL;
         }
         LoanApprovalTask task = new LoanApprovalTask();

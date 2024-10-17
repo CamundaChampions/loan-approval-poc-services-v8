@@ -1,10 +1,7 @@
 package com.gen.poc.loanapproval.services;
 
 import com.gen.poc.loanapproval.constants.AppConstants;
-import com.gen.poc.loanapproval.enums.ApprovalCategory;
-import com.gen.poc.loanapproval.enums.LoanApplicationStatus;
-import com.gen.poc.loanapproval.enums.TaskStatus;
-import com.gen.poc.loanapproval.enums.UserRoleAndUserList;
+import com.gen.poc.loanapproval.enums.*;
 import com.gen.poc.loanapproval.repository.LoanApplicationRepository;
 import com.gen.poc.loanapproval.repository.LoanApprovalTaskRepository;
 import com.gen.poc.loanapproval.repository.LoanSummaryRepository;
@@ -18,6 +15,7 @@ import com.gen.poc.loanapproval.web.dto.LoanSummaryListResponse;
 import com.gen.poc.loanapproval.web.dto.LoanSummaryResponse;
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
@@ -63,23 +61,43 @@ public class LoanSubmitService {
         return String.valueOf(loanApplication.getLoanApplicationId());
     }
 
-    public void completeUserTask(String loanApplicationId, ApprovalCategory taskName, Map<String, Object> additionalParam) {
+    public void completeUserTask(Long loanApplicationId, String userId, Decision decision, String comments) {
 
-        List<LoanApprovalTask> loanApprovalTask = loanApprovalTaskRepository.findByLoanApplicationIdAndTaskCategory(Long.valueOf(loanApplicationId), taskName);
+        UserRoleAndUserList userRole = UserRoleAndUserList.getUserRole(userId);
+        if (userRole == UserRoleAndUserList.APPLICANT)
+            throw new RuntimeException(" You are not authorized to perform the task");
 
-        TaskStatus status = TaskStatus.COMPLETED;
-        if (!CollectionUtils.isEmpty(loanApprovalTask) && loanApprovalTask.get(0).getStatus() == TaskStatus.IN_PROGRESS) {
-            if ((boolean) additionalParam.get("hasMissingData")) {
-                status = TaskStatus.REJECTED;
-            }
+        String taskId;
+        if (userRole == UserRoleAndUserList.FINANCIAL_ASSESSMENT_MANAGER)
+            taskId = "FM-".concat(String.valueOf(loanApplicationId));
+        else
+            taskId = "RM-".concat(String.valueOf(loanApplicationId));
 
-            loanApprovalTask.get(0).setStatus(status);
-            loanApprovalTaskRepository.save(loanApprovalTask.get(0));
+        log.info("Task is - {}", taskId);
+        LoanApprovalTask loanApprovalTask = loanApprovalTaskRepository.findPendingApprovalTask(taskId);
+        if (loanApprovalTask == null)
+            throw new EntityNotFoundException("Loan detail does not exist or you are not authorized to view the details.");
 
-            zeebeClient.newCompleteCommand(Long.parseLong(loanApprovalTask.get(0).getTaskInstanceId()))
-                    .variables(additionalParam)
-                    .send().join();
+        Map<String, Object> variable = new HashMap<>();
+
+
+        if (userRole == UserRoleAndUserList.FINANCIAL_ASSESSMENT_MANAGER)
+            variable.put("hasMissingData", decision == Decision.REJECT);
+        else
+            variable.put("decision", decision.name());
+
+        TaskStatus status = TaskStatus.REJECTED;
+        if (decision == Decision.APPROVE) {
+            status = TaskStatus.COMPLETED;
         }
+
+        loanApprovalTask.setStatus(status);
+        loanApprovalTaskRepository.save(loanApprovalTask);
+
+        zeebeClient.newCompleteCommand(Long.parseLong(loanApprovalTask.getTaskInstanceId()))
+                .variables(variable)
+                .send().join();
+
 
     }
 
@@ -166,7 +184,7 @@ public class LoanSubmitService {
 
     }
 
-    public LoanSummaryResponse findLoanDetailsByIdAndUser(Long loanId, String userId){
+    public LoanSummaryResponse findLoanDetailsByIdAndUser(Long loanId, String userId) {
         UserRoleAndUserList userRole = UserRoleAndUserList.getUserRole(userId);
         LoanSummary loanSummary = new LoanSummary();
         if (userRole == UserRoleAndUserList.FINANCIAL_ASSESSMENT_MANAGER)
@@ -178,8 +196,11 @@ public class LoanSubmitService {
         } else if (userRole == UserRoleAndUserList.APPLICANT) {
             loanSummary = loanSummaryRepository.getInProcessLoanApplicationItemsOfApplicantAndLoanId(userId, loanId);
         }
-        LoanSummaryResponse response = loanRequestMapper.mapToResponse(loanSummary);
+        if (loanSummary == null)
+            throw new EntityNotFoundException("Loan detail does not exist or you are not authorized to view the details.");
 
+        LoanSummaryResponse response = loanRequestMapper.mapToResponse(loanSummary);
+        response.setPossibleActivities(PossibleActivity.getPossibleActivityByRoleAndStatus(userRole, response.getStatusCode()));
         return response;
     }
 

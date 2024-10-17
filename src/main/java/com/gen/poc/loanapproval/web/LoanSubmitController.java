@@ -1,6 +1,7 @@
 package com.gen.poc.loanapproval.web;
 
 import com.gen.poc.loanapproval.enums.ApprovalCategory;
+import com.gen.poc.loanapproval.enums.Decision;
 import com.gen.poc.loanapproval.services.LoanSubmitService;
 import com.gen.poc.loanapproval.web.dto.LoanRequestDTO;
 import com.gen.poc.loanapproval.web.dto.LoanSummaryListResponse;
@@ -30,12 +31,13 @@ public class LoanSubmitController {
 
     }
 
-    @PostMapping(path = "/{loan-id}/approval-type/{approval-type}/approve", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> approve(@PathVariable(name = "loan-id") String loanId,
-                                          @PathVariable(name = "approval-type") ApprovalCategory approvalType,
-                                          @RequestBody Map<String, Object> additionalParam) {
+    @PostMapping(path = "/{loan-id}/action/{action}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> approve(@RequestHeader(name = "user-id") String userId,
+                                          @PathVariable(name = "loan-id") Long loanId,
+                                          @PathVariable(name = "action") Decision decision,
+                                          @RequestBody String comments) {
 
-        loanSubmitService.completeUserTask(loanId, approvalType, additionalParam);
+        loanSubmitService.completeUserTask(loanId, userId, decision, comments);
 
         return ResponseEntity.ok("Success!!");
 

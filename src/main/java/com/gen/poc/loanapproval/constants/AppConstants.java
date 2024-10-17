@@ -13,4 +13,16 @@ public class AppConstants {
     public final static String MSGEVNT_AKNOWLEDGE_MISSING_DOC_PROVIDED = "MSGEVNT_AKNOWLEDGE_MISSING_DOC_PROVIDED";
 
     public final static String MISSING_DOC_CORRELATION_KEY = MSGEVNT_AKNOWLEDGE_MISSING_DOC_PROVIDED + "-%s";
+
+
+    public final static String CAN_CANCEL = "CAN_CANCEL";
+
+    public final static String CAN_APPROVEORREJECT = "CAN_APPROVEORREJECT";
+
+    public final static String CAN_ACKNOWLEDGE_CORRECTION = "CAN_ACKNOWLEDGE_CORRECTION";
+
+    public final static String CAN_ACKNOWLEDGE_DOC_PROVIDED = "CAN_ACKNOWLEDGE_DOC_PROVIDED";
+
+
+
 }
