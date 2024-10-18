@@ -26,10 +26,10 @@ public interface LoanSummaryRepository extends JpaRepository<LoanSummary, BigDec
     @Query(value = """
             Select LOAN_APPLICATION_ID, LOAN_CATEGORY, STATUS, AMOUNT, NULL AS TASK_ID, NULL AS TASK_CATEGORY 
             from Loan_application 
-            where status not in  ('APPROVE_AND_DISBURSED','REJECTED','AUTO_CANCELLED')
+            where (:includeClosedApplication = 1 or status not in  ('APPROVE_AND_DISBURSED','REJECTED','AUTO_CANCELLED','CANCELLED'))
             AND customer_id = :userId
             """, nativeQuery = true)
-    List<LoanSummary> getInProcessLoanApplicationItemsOfApplicant(@Param("userId") String userId);
+    List<LoanSummary> getInProcessLoanApplicationItemsOfApplicant(@Param("userId") String userId, @Param("includeClosedApplication") boolean includeClosedApplication);
 
     @Query(value = """
             Select LOAN.LOAN_APPLICATION_ID, LOAN_CATEGORY, LOAN.STATUS, AMOUNT, TASK_ID, TASK_CATEGORY from CAM_POC.Loan_application loan inner join CAM_POC.loan_approval_task task
@@ -44,8 +44,7 @@ public interface LoanSummaryRepository extends JpaRepository<LoanSummary, BigDec
     @Query(value = """
             Select LOAN_APPLICATION_ID, LOAN_CATEGORY, STATUS, AMOUNT, NULL AS TASK_ID, NULL AS TASK_CATEGORY 
             from Loan_application 
-            where status not in  ('APPROVE_AND_DISBURSED','REJECTED','AUTO_CANCELLED')
-            AND customer_id = :userId
+            where customer_id = :userId
             AND LOAN_APPLICATION_ID = :loanId
             """, nativeQuery = true)
     LoanSummary getInProcessLoanApplicationItemsOfApplicantAndLoanId(@Param("userId") String userId, @Param("loanId") Long loanId);

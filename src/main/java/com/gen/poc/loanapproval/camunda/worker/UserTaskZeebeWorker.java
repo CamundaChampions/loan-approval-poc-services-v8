@@ -1,4 +1,4 @@
-package com.gen.poc.loanapproval.worker;
+package com.gen.poc.loanapproval.camunda.worker;
 
 import com.gen.poc.loanapproval.enums.TaskStatus;
 import com.gen.poc.loanapproval.enums.ApprovalCategory;

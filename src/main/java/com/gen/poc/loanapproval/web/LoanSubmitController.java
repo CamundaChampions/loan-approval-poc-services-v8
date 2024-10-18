@@ -76,9 +76,11 @@ public class LoanSubmitController {
     }
 
     @GetMapping(path = "", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LoanSummaryListResponse> getAllProgressTaskOfUser(@RequestHeader(name = "user-id") String userId) {
+    public ResponseEntity<LoanSummaryListResponse> getAllProgressTaskOfUser(
+            @RequestHeader(name = "user-id") String userId,
+            @RequestParam(name = "include-closed", required = false) boolean includeClosedApplication) {
 
-        return ResponseEntity.ok(loanSubmitService.findAllUserItems(userId));
+        return ResponseEntity.ok(loanSubmitService.findAllUserItems(userId, includeClosedApplication));
     }
 
     @GetMapping(path = "/{loan-id}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -87,6 +89,15 @@ public class LoanSubmitController {
 
         return ResponseEntity.ok(loanSubmitService.findLoanDetailsByIdAndUser(loanId, userId));
     }
+
+    @DeleteMapping(path = "/{loan-id}/action/CANCEL", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> cancelLoanApplication(@RequestHeader(name = "user-id") String userId,
+                                                                  @PathVariable(name = "loan-id") Long loanId) {
+
+        loanSubmitService.cancelLoan(loanId, userId);
+        return ResponseEntity.ok("Cancelled");
+    }
+
 
 
 }

@@ -1,5 +1,6 @@
 package com.gen.poc.loanapproval.services;
 
+import com.gen.poc.loanapproval.camunda.services.CamundaOperationWrapperService;
 import com.gen.poc.loanapproval.constants.AppConstants;
 import com.gen.poc.loanapproval.enums.*;
 import com.gen.poc.loanapproval.repository.LoanApplicationRepository;
@@ -25,12 +26,14 @@ import org.springframework.util.CollectionUtils;
 import java.math.BigDecimal;
 import java.util.*;
 
+import static com.gen.poc.loanapproval.constants.AppConstants.EVNTSTARTMSGEVENT_CANCELLATION;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class LoanSubmitService {
 
-    private final ZeebeClient zeebeClient;
+    private final CamundaOperationWrapperService camundaOperationWrapperService;
 
     private final LoanRequestMapper loanRequestMapper;
 
@@ -43,6 +46,10 @@ public class LoanSubmitService {
 
     public String processLoanRequest(String userId, LoanRequestDTO request) {
 
+        UserRoleAndUserList userRole = UserRoleAndUserList.getUserRole(userId);
+        if(userRole != UserRoleAndUserList.APPLICANT)
+            throw new RuntimeException("Unauthorized user");
+
         LoanApplication loanApplication = loanRequestMapper.toLoanRequestEntityOnCreate(request);
         loanApplication.setStatus(LoanApplicationStatus.CREATED);
         loanApplication.setCustomerId(userId);
@@ -50,11 +57,10 @@ public class LoanSubmitService {
         Map<String, Object> params = new HashMap<>();
 
         params.put("loan-id", loanApplication.getLoanApplicationId());
+        params.put("userId", userId);
+        params.put(EVNTSTARTMSGEVENT_CANCELLATION, EVNTSTARTMSGEVENT_CANCELLATION.concat("-").concat(String.valueOf(loanApplication.getLoanApplicationId())));
 
-        final ProcessInstanceEvent processInstanceEvent = zeebeClient
-                .newCreateInstanceCommand().bpmnProcessId("LOAN_APPROVAL_PROCESS")
-                .latestVersion().variables(params)
-                .send().join();
+        final ProcessInstanceEvent processInstanceEvent = camundaOperationWrapperService.createCamundaProcessInstance("LOAN_APPROVAL_PROCESS", params);
 
         loanApplication.setProcessInstanceId(String.valueOf(processInstanceEvent.getProcessInstanceKey()));
         loanApplicationRepository.save(loanApplication);
@@ -94,29 +100,23 @@ public class LoanSubmitService {
         loanApprovalTask.setStatus(status);
         loanApprovalTaskRepository.save(loanApprovalTask);
 
-        zeebeClient.newCompleteCommand(Long.parseLong(loanApprovalTask.getTaskInstanceId()))
-                .variables(variable)
-                .send().join();
-
+        camundaOperationWrapperService.completeUserTask(loanApprovalTask.getTaskInstanceId(), variable);
 
     }
 
     public void acknowledgeDocumentSigning(String loanId, Map<String, Object> additionalParam) {
         LoanApplication loanApplication = findLoanApplicationById(Long.valueOf(loanId));
-        zeebeClient.newPublishMessageCommand()
-                .messageName(AppConstants.MSGEVNT_SIGNED_DOC_RECEIVED)
-                .correlationKey(String.format(AppConstants.DOC_SIGN_CORRELATION_KEY, loanApplication.getProcessInstanceId()))
-                .variables(additionalParam)
-                .send().join();
+        camundaOperationWrapperService.triggerCorrelateMessage(AppConstants.MSGEVNT_SIGNED_DOC_RECEIVED,
+                String.format(AppConstants.DOC_SIGN_CORRELATION_KEY, loanApplication.getProcessInstanceId()),
+                additionalParam);
     }
 
     public void acknowledgeDocumentReAssessment(String loanId, Map<String, Object> additionalParam) {
         LoanApplication loanApplication = findLoanApplicationById(Long.valueOf(loanId));
-        zeebeClient.newPublishMessageCommand()
-                .messageName(AppConstants.MSGEVNT_AKNOWLEDGE_MISSING_DOC_PROVIDED)
-                .correlationKey(String.format(AppConstants.MISSING_DOC_CORRELATION_KEY, loanApplication.getProcessInstanceId()))
-                .variables(additionalParam)
-                .send().join();
+        camundaOperationWrapperService.triggerCorrelateMessage(AppConstants.MSGEVNT_AKNOWLEDGE_MISSING_DOC_PROVIDED,
+                String.format(AppConstants.MISSING_DOC_CORRELATION_KEY, loanApplication.getProcessInstanceId()),
+                additionalParam);
+
     }
 
     public void updateDocumentDetails(String loanId, Map<String, Object> additionalParam, Optional<Long> amountOpt,
@@ -139,11 +139,9 @@ public class LoanSubmitService {
         if (ObjectUtils.allNotNull(loanApplication.getAmount(), loanApplication.getLoanCategory(), loanApplication.getTerm())
                 && loanApplication.getAmount().longValue() > 0 && loanApplication.getTerm() > 0) {
             additionalParam.put("isApplicationComplete", true);
-            zeebeClient.newPublishMessageCommand()
-                    .messageName(AppConstants.MSGEVNT_MISSING_APP_DATA_RECIEVED_AKNWLG)
-                    .correlationKey(String.format(AppConstants.APP_UPDATED_CORRELATION_KEY, loanApplication.getProcessInstanceId()))
-                    .variables(additionalParam)
-                    .send().join();
+            camundaOperationWrapperService.triggerCorrelateMessage(AppConstants.MSGEVNT_MISSING_APP_DATA_RECIEVED_AKNWLG,
+                    String.format(AppConstants.APP_UPDATED_CORRELATION_KEY, loanApplication.getProcessInstanceId()),
+                    additionalParam);
         } else {
             log.info("Mandatory data is invalid or not provided cannot proceed");
         }
@@ -158,17 +156,17 @@ public class LoanSubmitService {
 
     }
 
-    public LoanSummaryListResponse findAllUserItems(String user) {
+    public LoanSummaryListResponse findAllUserItems(String user, boolean includeClosedApplication) {
         LoanSummaryListResponse response = new LoanSummaryListResponse();
         UserRoleAndUserList userRole = UserRoleAndUserList.getUserRole(user);
-        List<LoanSummaryDto> loanSummaries = findAllTaskByUser(user, userRole);
+        List<LoanSummaryDto> loanSummaries = findAllTaskByUser(user, userRole, includeClosedApplication);
         response.setLoanSummaryList(loanSummaries);
         response.setAllowToCreateLoan(userRole == UserRoleAndUserList.APPLICANT && CollectionUtils.isEmpty(loanSummaries));
         return response;
 
     }
 
-    public List<LoanSummaryDto> findAllTaskByUser(String user, UserRoleAndUserList userRole) {
+    public List<LoanSummaryDto> findAllTaskByUser(String user, UserRoleAndUserList userRole, boolean includeClosedApplication) {
         List<LoanSummary> loanSummaries = new ArrayList<>();
         if (userRole == UserRoleAndUserList.FINANCIAL_ASSESSMENT_MANAGER)
             loanSummaries = loanSummaryRepository.getPendingApprovalTaskDetailsByTaskCategory(ApprovalCategory.FINANCIAL_ASSESSMENT_MANAGER.name(),
@@ -177,7 +175,7 @@ public class LoanSubmitService {
             loanSummaries = loanSummaryRepository.getPendingApprovalTaskDetailsByTaskCategory(ApprovalCategory.RISK_ASSESSMENT_MANAGER.name(),
                     LoanApplicationStatus.PENDING_RISK_ASSESSMENT_MANAGER_APPROVAL.name());
         } else if (userRole == UserRoleAndUserList.APPLICANT) {
-            loanSummaries = loanSummaryRepository.getInProcessLoanApplicationItemsOfApplicant(user);
+            loanSummaries = loanSummaryRepository.getInProcessLoanApplicationItemsOfApplicant(user, includeClosedApplication);
         }
 
         return loanRequestMapper.mapTo(loanSummaries);
@@ -202,6 +200,23 @@ public class LoanSubmitService {
         LoanSummaryResponse response = loanRequestMapper.mapToResponse(loanSummary);
         response.setPossibleActivities(PossibleActivity.getPossibleActivityByRoleAndStatus(userRole, response.getStatusCode()));
         return response;
+    }
+
+    public void cancelLoan(Long loanId, String userId){
+        UserRoleAndUserList userRole = UserRoleAndUserList.getUserRole(userId);
+        if(userRole != UserRoleAndUserList.APPLICANT)
+            throw new RuntimeException("You are not authorized to cancel the application");
+
+        LoanSummary  loanSummary = loanSummaryRepository.getInProcessLoanApplicationItemsOfApplicantAndLoanId(userId, loanId);
+        if (loanSummary == null || List.of(LoanApplicationStatus.APPROVE_AND_DISBURSED,
+                        LoanApplicationStatus.CANCELLED,
+                        LoanApplicationStatus.AUTO_CANCELLED,
+                        LoanApplicationStatus.REJECTED)
+                .contains(loanSummary.getStatusCode()))
+            throw new EntityNotFoundException("Loan detail does not exist or you are not authorized to view the details.");
+
+        camundaOperationWrapperService.triggerCorrelateMessage(EVNTSTARTMSGEVENT_CANCELLATION,
+                EVNTSTARTMSGEVENT_CANCELLATION.concat("-").concat(String.valueOf(loanId)), new HashMap<>());
     }
 
 }

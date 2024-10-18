@@ -14,6 +14,7 @@ public class AppConstants {
 
     public final static String MISSING_DOC_CORRELATION_KEY = MSGEVNT_AKNOWLEDGE_MISSING_DOC_PROVIDED + "-%s";
 
+    public final static String EVNTSTARTMSGEVENT_CANCELLATION = "EVNTSTARTMSGEVENT_CANCELLATION";
 
     public final static String CAN_CANCEL = "CAN_CANCEL";
 

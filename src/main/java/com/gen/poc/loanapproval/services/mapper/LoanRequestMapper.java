@@ -2,8 +2,10 @@ package com.gen.poc.loanapproval.services.mapper;
 
 import com.gen.poc.loanapproval.repository.entity.*;
 import com.gen.poc.loanapproval.web.dto.*;
+import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
 import java.util.List;
 
@@ -18,6 +20,7 @@ public interface LoanRequestMapper {
 
 	List<LoanSummaryDto> mapTo(List<LoanSummary> source);
 
+	@Mapping(target = "loanTypeCode", source = "loanType")
 	LoanSummaryResponse mapToResponse(LoanSummary source);
 //
 //	@Mapping(target = "id", ignore = true)

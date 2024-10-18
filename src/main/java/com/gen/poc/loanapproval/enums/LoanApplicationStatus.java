@@ -12,6 +12,7 @@ public enum LoanApplicationStatus {
     PENDING_DOCUMENT_SIGNING("Pending Document Signing"),
     APPROVE_AND_DISBURSED("Approve and Disbursed"),
     AUTO_CANCELLED("Auto Cancelled"),
+    CANCELLED("Cancelled"),
     REJECTED("Rejected");
 
 

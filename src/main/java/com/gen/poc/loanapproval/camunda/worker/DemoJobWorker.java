@@ -1,4 +1,4 @@
-package com.gen.poc.loanapproval.worker;
+package com.gen.poc.loanapproval.camunda.worker;
 
 import io.camunda.zeebe.spring.client.annotation.JobWorker;
 import lombok.extern.slf4j.Slf4j;

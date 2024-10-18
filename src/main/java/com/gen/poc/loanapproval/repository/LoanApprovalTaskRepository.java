@@ -1,6 +1,7 @@
 package com.gen.poc.loanapproval.repository;
 
 import com.gen.poc.loanapproval.enums.ApprovalCategory;
+import com.gen.poc.loanapproval.enums.TaskStatus;
 import com.gen.poc.loanapproval.repository.entity.LoanApprovalTask;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -22,4 +23,6 @@ public interface LoanApprovalTaskRepository extends JpaRepository<LoanApprovalTa
     LoanApprovalTask findPendingApprovalTask(@Param("task_id") String taskId);
 
     List<LoanApprovalTask> findByLoanApplicationId(Long loanApplicationId);
+
+    List<LoanApprovalTask> findByLoanApplicationIdAndStatus(Long loanApplicationId, TaskStatus status);
 }

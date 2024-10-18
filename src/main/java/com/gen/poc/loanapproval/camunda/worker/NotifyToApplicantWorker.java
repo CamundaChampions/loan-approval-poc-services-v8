@@ -1,4 +1,4 @@
-package com.gen.poc.loanapproval.worker;
+package com.gen.poc.loanapproval.camunda.worker;
 
 import com.gen.poc.loanapproval.constants.AppConstants;
 import com.gen.poc.loanapproval.enums.LoanApplicationStatus;

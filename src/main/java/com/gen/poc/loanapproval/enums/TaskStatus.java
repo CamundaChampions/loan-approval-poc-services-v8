@@ -4,7 +4,8 @@ import lombok.Getter;
 
 @Getter
 public enum TaskStatus {
-    IN_PROGRESS("IN PROGRESS"),
+    CANCELLED("Cancelled"),
+    IN_PROGRESS("In-progress"),
     COMPLETED("Completed"),
     REJECTED("Rejected");
 

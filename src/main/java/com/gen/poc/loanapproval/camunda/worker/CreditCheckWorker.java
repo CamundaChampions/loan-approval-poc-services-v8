@@ -1,4 +1,4 @@
-package com.gen.poc.loanapproval.worker;
+package com.gen.poc.loanapproval.camunda.worker;
 
 import io.camunda.zeebe.client.api.response.ActivatedJob;
 import io.camunda.zeebe.client.api.worker.JobClient;
@@ -15,6 +15,7 @@ public class CreditCheckWorker {
     @JobWorker(type = "creditCheckServiceTask", autoComplete = true)
     public Map<String, Object> checkForFormCompletenessServiceTask(final JobClient client, final ActivatedJob job){
         log.info("test creditCheckServiceTask worker");
-        return Map.of("creditScore",820);
+        String userId = job.getVariable("userId").toString();
+        return Map.of("creditScore","applicant_1".equals(userId) ? 820: 700);
     }
 }
