@@ -1,6 +1,5 @@
 package com.gen.poc.loanapproval.web;
 
-import com.gen.poc.loanapproval.enums.ApprovalCategory;
 import com.gen.poc.loanapproval.enums.Decision;
 import com.gen.poc.loanapproval.services.LoanSubmitService;
 import com.gen.poc.loanapproval.web.dto.LoanRequestDTO;
@@ -88,6 +87,13 @@ public class LoanSubmitController {
                                                                   @PathVariable(name = "loan-id") Long loanId) {
 
         return ResponseEntity.ok(loanSubmitService.findLoanDetailsByIdAndUser(loanId, userId));
+    }
+
+    @GetMapping(path = "/cibil-score", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Integer> getLoanDetailsById(@RequestHeader(name = "user-id") String userId) {
+
+        // this will be developed later as per requirement
+        return ResponseEntity.ok(830);
     }
 
     @DeleteMapping(path = "/{loan-id}/action/CANCEL", produces = MediaType.APPLICATION_JSON_VALUE)
