@@ -2,6 +2,7 @@ package com.gen.poc.loanapproval.camunda.worker;
 
 import com.gen.poc.loanapproval.constants.AppConstants;
 import com.gen.poc.loanapproval.enums.LoanApplicationStatus;
+import com.gen.poc.loanapproval.exception.LoanNotFoundException;
 import com.gen.poc.loanapproval.repository.LoanApplicationRepository;
 import com.gen.poc.loanapproval.repository.entity.LoanApplication;
 import io.camunda.zeebe.client.api.response.ActivatedJob;
@@ -67,7 +68,7 @@ public class NotifyToApplicantWorker {
     private LoanApplication findLoanApplicationById(Long loanApplicationId) {
         Optional<LoanApplication> loanApplication = loanApplicationRepository.findById(loanApplicationId);
         if (loanApplication.isEmpty())
-            throw new RuntimeException("Invalid Loan Id");
+            throw new LoanNotFoundException(loanApplicationId);
 
         return loanApplication.get();
 

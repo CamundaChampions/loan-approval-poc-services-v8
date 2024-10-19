@@ -3,6 +3,7 @@ package com.gen.poc.loanapproval.services;
 import com.gen.poc.loanapproval.camunda.services.CamundaOperationWrapperService;
 import com.gen.poc.loanapproval.constants.AppConstants;
 import com.gen.poc.loanapproval.enums.*;
+import com.gen.poc.loanapproval.exception.LoanNotFoundException;
 import com.gen.poc.loanapproval.repository.LoanApplicationRepository;
 import com.gen.poc.loanapproval.repository.LoanApprovalTaskRepository;
 import com.gen.poc.loanapproval.repository.LoanSummaryRepository;
@@ -14,9 +15,7 @@ import com.gen.poc.loanapproval.web.dto.LoanRequestDTO;
 import com.gen.poc.loanapproval.web.dto.LoanSummaryDto;
 import com.gen.poc.loanapproval.web.dto.LoanSummaryListResponse;
 import com.gen.poc.loanapproval.web.dto.LoanSummaryResponse;
-import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
@@ -46,10 +45,6 @@ public class LoanSubmitService {
 
     public String processLoanRequest(String userId, LoanRequestDTO request) {
 
-        UserRoleAndUserList userRole = UserRoleAndUserList.getUserRole(userId);
-        if(userRole != UserRoleAndUserList.APPLICANT)
-            throw new RuntimeException("Unauthorized user");
-
         LoanApplication loanApplication = loanRequestMapper.toLoanRequestEntityOnCreate(request);
         loanApplication.setStatus(LoanApplicationStatus.CREATED);
         loanApplication.setCustomerId(userId);
@@ -67,11 +62,7 @@ public class LoanSubmitService {
         return String.valueOf(loanApplication.getLoanApplicationId());
     }
 
-    public void completeUserTask(Long loanApplicationId, String userId, Decision decision, String comments) {
-
-        UserRoleAndUserList userRole = UserRoleAndUserList.getUserRole(userId);
-        if (userRole == UserRoleAndUserList.APPLICANT)
-            throw new RuntimeException(" You are not authorized to perform the task");
+    public void completeUserTask(Long loanApplicationId, String userId, UserRoleAndUserList userRole, Decision decision, String comments) {
 
         String taskId;
         if (userRole == UserRoleAndUserList.FINANCIAL_ASSESSMENT_MANAGER)
@@ -82,7 +73,7 @@ public class LoanSubmitService {
         log.info("Task is - {}", taskId);
         LoanApprovalTask loanApprovalTask = loanApprovalTaskRepository.findPendingApprovalTask(taskId);
         if (loanApprovalTask == null)
-            throw new EntityNotFoundException("Loan detail does not exist or you are not authorized to view the details.");
+            throw new LoanNotFoundException(loanApplicationId);
 
         Map<String, Object> variable = new HashMap<>();
 
@@ -150,13 +141,14 @@ public class LoanSubmitService {
     private LoanApplication findLoanApplicationById(Long loanApplicationId) {
         Optional<LoanApplication> loanApplication = loanApplicationRepository.findById(loanApplicationId);
         if (loanApplication.isEmpty())
-            throw new RuntimeException("Invalid Loan Id");
+            throw new LoanNotFoundException(loanApplicationId);
 
         return loanApplication.get();
 
     }
 
     public LoanSummaryListResponse findAllUserItems(String user, boolean includeClosedApplication) {
+
         LoanSummaryListResponse response = new LoanSummaryListResponse();
         UserRoleAndUserList userRole = UserRoleAndUserList.getUserRole(user);
         List<LoanSummaryDto> loanSummaries = findAllTaskByUser(user, userRole, includeClosedApplication);
@@ -195,25 +187,22 @@ public class LoanSubmitService {
             loanSummary = loanSummaryRepository.getInProcessLoanApplicationItemsOfApplicantAndLoanId(userId, loanId);
         }
         if (loanSummary == null)
-            throw new EntityNotFoundException("Loan detail does not exist or you are not authorized to view the details.");
+            throw new LoanNotFoundException(loanId);
 
         LoanSummaryResponse response = loanRequestMapper.mapToResponse(loanSummary);
         response.setPossibleActivities(PossibleActivity.getPossibleActivityByRoleAndStatus(userRole, response.getStatusCode()));
         return response;
     }
 
-    public void cancelLoan(Long loanId, String userId){
-        UserRoleAndUserList userRole = UserRoleAndUserList.getUserRole(userId);
-        if(userRole != UserRoleAndUserList.APPLICANT)
-            throw new RuntimeException("You are not authorized to cancel the application");
+    public void cancelLoan(Long loanId, String userId) {
 
-        LoanSummary  loanSummary = loanSummaryRepository.getInProcessLoanApplicationItemsOfApplicantAndLoanId(userId, loanId);
+        LoanSummary loanSummary = loanSummaryRepository.getInProcessLoanApplicationItemsOfApplicantAndLoanId(userId, loanId);
         if (loanSummary == null || List.of(LoanApplicationStatus.APPROVE_AND_DISBURSED,
                         LoanApplicationStatus.CANCELLED,
                         LoanApplicationStatus.AUTO_CANCELLED,
                         LoanApplicationStatus.REJECTED)
                 .contains(loanSummary.getStatusCode()))
-            throw new EntityNotFoundException("Loan detail does not exist or you are not authorized to view the details.");
+            throw new LoanNotFoundException(loanId);
 
         camundaOperationWrapperService.triggerCorrelateMessage(EVNTSTARTMSGEVENT_CANCELLATION,
                 EVNTSTARTMSGEVENT_CANCELLATION.concat("-").concat(String.valueOf(loanId)), new HashMap<>());

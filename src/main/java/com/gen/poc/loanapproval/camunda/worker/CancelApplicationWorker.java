@@ -2,6 +2,7 @@ package com.gen.poc.loanapproval.camunda.worker;
 
 import com.gen.poc.loanapproval.enums.LoanApplicationStatus;
 import com.gen.poc.loanapproval.enums.TaskStatus;
+import com.gen.poc.loanapproval.exception.LoanNotFoundException;
 import com.gen.poc.loanapproval.repository.LoanApplicationRepository;
 import com.gen.poc.loanapproval.repository.LoanApprovalTaskRepository;
 import com.gen.poc.loanapproval.repository.entity.LoanApplication;
@@ -42,12 +43,19 @@ public class CancelApplicationWorker {
         log.info("test cancelApplicationServiceTask worker");
     }
 
+    @JobWorker(type = "rejectApplicationServiceTask")
+    public void rejectApplicationServiceTask(final JobClient client, final ActivatedJob job){
+        Map<String, Object> variables = job.getVariablesAsMap();
+        Long loanApplicationId = Long.valueOf((Integer) job.getVariablesAsMap().get("loan-id"));
+        cancelLoanApplication(loanApplicationId, LoanApplicationStatus.REJECTED);
+        log.info("Rejected ApplicationServiceTask worker");
+    }
 
 
     private void cancelLoanApplication(long loanApplicationId, LoanApplicationStatus status){
         Optional<LoanApplication> loanApplicationOptional = loanApplicationRepository.findById(loanApplicationId);
         if (loanApplicationOptional.isEmpty())
-            throw new RuntimeException("Invalid Loan Id");
+            throw new LoanNotFoundException(loanApplicationId);
 
 
         LoanApplication loanApplication = loanApplicationOptional.get();
