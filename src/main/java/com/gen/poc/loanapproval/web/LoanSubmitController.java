@@ -88,7 +88,7 @@ public class LoanSubmitController {
     @GetMapping(path = "", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LoanSummaryListResponse> getAllProgressTaskOfUser(
             @RequestHeader(name = "user-id") String userId,
-            @RequestParam(name = "include-closed", required = false) boolean includeClosedApplication) {
+            @RequestParam(name = "includeClosedApplication", required = false) boolean includeClosedApplication) {
 
         authorizeApplicantForAnyRole(userId);
 

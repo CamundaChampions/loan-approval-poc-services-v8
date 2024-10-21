@@ -30,6 +30,9 @@ public class LoanSummary {
     @Column(name = "task_id")
     private String taskId;
 
+    @Column(name = "term")
+    private int term;
+
     @Enumerated(value = EnumType.STRING)
     @Column(name = "task_category")
     private ApprovalCategory taskCategory;

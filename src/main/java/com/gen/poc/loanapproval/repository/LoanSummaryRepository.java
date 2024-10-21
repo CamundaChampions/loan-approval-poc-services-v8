@@ -15,7 +15,7 @@ import java.util.List;
 public interface LoanSummaryRepository extends JpaRepository<LoanSummary, BigDecimal> {
     // Custom query methods can be added here if needed
     @Query(value = """
-            Select LOAN.LOAN_APPLICATION_ID, LOAN_CATEGORY, LOAN.STATUS, AMOUNT, TASK_ID, TASK_CATEGORY from CAM_POC.Loan_application loan inner join CAM_POC.loan_approval_task task
+            Select LOAN.LOAN_APPLICATION_ID, LOAN_CATEGORY, LOAN.STATUS, AMOUNT, TERM, TASK_ID, TASK_CATEGORY from CAM_POC.Loan_application loan inner join CAM_POC.loan_approval_task task
                         on loan.loan_application_id = task.loan_application_id
             where task.TASK_CATEGORY = :taskCategory
             and loan.status = :loanStatus
@@ -24,15 +24,16 @@ public interface LoanSummaryRepository extends JpaRepository<LoanSummary, BigDec
     List<LoanSummary> getPendingApprovalTaskDetailsByTaskCategory(@Param("taskCategory") String taskCategory, @Param("loanStatus") String loanStatus);
 
     @Query(value = """
-            Select LOAN_APPLICATION_ID, LOAN_CATEGORY, STATUS, AMOUNT, NULL AS TASK_ID, NULL AS TASK_CATEGORY 
+            Select LOAN_APPLICATION_ID, LOAN_CATEGORY, STATUS, AMOUNT, TERM, NULL AS TASK_ID, NULL AS TASK_CATEGORY 
             from Loan_application 
             where (:includeClosedApplication = 1 or status not in  ('APPROVE_AND_DISBURSED','REJECTED','AUTO_CANCELLED','CANCELLED'))
             AND customer_id = :userId
+            ORDER BY LOAN_APPLICATION_ID DESC
             """, nativeQuery = true)
     List<LoanSummary> getInProcessLoanApplicationItemsOfApplicant(@Param("userId") String userId, @Param("includeClosedApplication") boolean includeClosedApplication);
 
     @Query(value = """
-            Select LOAN.LOAN_APPLICATION_ID, LOAN_CATEGORY, LOAN.STATUS, AMOUNT, TASK_ID, TASK_CATEGORY from CAM_POC.Loan_application loan inner join CAM_POC.loan_approval_task task
+            Select LOAN.LOAN_APPLICATION_ID, LOAN_CATEGORY, LOAN.STATUS, AMOUNT, TERM, TASK_ID, TASK_CATEGORY from CAM_POC.Loan_application loan inner join CAM_POC.loan_approval_task task
                         on loan.loan_application_id = task.loan_application_id
             where task.TASK_CATEGORY = :taskCategory
             and loan.status = :loanStatus
@@ -42,7 +43,7 @@ public interface LoanSummaryRepository extends JpaRepository<LoanSummary, BigDec
     LoanSummary getPendingApprovalTaskDetailsByTaskCategoryAndLoanId(@Param("taskCategory") String taskCategory, @Param("loanStatus") String loanStatus, @Param("loanId") Long loanId);
 
     @Query(value = """
-            Select LOAN_APPLICATION_ID, LOAN_CATEGORY, STATUS, AMOUNT, NULL AS TASK_ID, NULL AS TASK_CATEGORY 
+            Select LOAN_APPLICATION_ID, LOAN_CATEGORY, STATUS, AMOUNT, TERM, NULL AS TASK_ID, NULL AS TASK_CATEGORY 
             from Loan_application 
             where customer_id = :userId
             AND LOAN_APPLICATION_ID = :loanId

@@ -12,7 +12,6 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface LoanRequestMapper {
 	@Mapping(target = "loanApplicationId", ignore = true)
-	@Mapping(target = "comments", ignore = true)
 	@Mapping(target = "processInstanceId", ignore = true)
 	@Mapping(target = "status", ignore = true)
 	@Mapping(target = "customerId", ignore = true)

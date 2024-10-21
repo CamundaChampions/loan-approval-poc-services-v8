@@ -28,9 +28,15 @@ public class LoanSummaryDto {
 
     public BigDecimal amount;
 
+    private String reason;
+
+    private String comments;
+
     private boolean approvalRequire;
 
     private String taskId;
+
+    private int term;
 
     private ApprovalCategory taskCategory;
 
