@@ -32,6 +32,7 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
     implementation ('io.camunda:spring-boot-starter-camunda-sdk:8.5.7')
+    implementation ('org.camunda.community.migration:camunda-7-adapter:0.7.0')
 
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0'
 	implementation(platform("io.grpc:grpc-bom:1.68.0"))
